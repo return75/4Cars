@@ -9,23 +9,33 @@ let height = canvas.height= backgroundCanvas.height = window.innerHeight
 let animationFrame,
     carNumbers = 4,
     gameSpeed = 1,
+    score = 0,
+    heart = 3,
     roadWidth = 200,
     carToBottomDistance = 100,
-    carWidth = 60,
-    carHeight = 100,
+    carWidth = 45,
+    carHeight = 75,
     roads = [],
     colors = ['#ef0101', '#0150ef', '#0ab333', '#d2c804'],
-    targetBallRadius = 25,
-    targetSquareWidth = 50,
+    targetBallRadius = 20,
+    targetSquareWidth = 40,
     keys = ['F', 'G', 'H', 'J', 'K']
 
 let startAnimationFrames = function () {
     clearCanvas()
     drawBackground()
     drawRoads()
-    drawCars()
     drawTargets()
     moveTargets()
+    drawCars()
+    checkCarTargetCollision()
+    removeExitedTargetsFromScreen()
+    showScore()
+    showHearts()
+    if (heart === 0) {
+        cancelAnimationFrame(animationFrame)
+        return
+    }
     animationFrame = requestAnimationFrame(startAnimationFrames)
 }
 
@@ -103,10 +113,38 @@ function createRoads () {
 }
 function drawCars () {
     roads.forEach(item => {
-        roundRect(context, item.getCar().getPosition().getX(), item.getCar().getPosition().getY(),
-            carWidth / 2 + 10, carHeight / 2 + 10, 5 )
-        roundRect(context, item.getCar().getPosition().getX(), item.getCar().getPosition().getY(),
-            carWidth / 2, carHeight / 2, 5, item.getCar().color )
+        let x = item.getCar().getPosition().getX()
+        let y = item.getCar().getPosition().getY()
+        let color = item.getCar().color
+
+        roundRect(context, x, y,
+            carWidth, carHeight, 15, color)
+        roundRect(context, x, y,
+            carWidth - 15, carHeight - 15, 10 )
+        roundRect(context, x, y,
+            carWidth / 4, carWidth / 4 , 0, color)
+
+        // draw car top glass
+        context.beginPath()
+        context.moveTo(x - carWidth / 8, y - carWidth / 8 )
+        context.lineTo(x - carWidth / 8 - 5, y - carWidth / 8 - 10);
+        context.quadraticCurveTo(x, y - (carWidth / 8 + 5) - 12, x + carWidth / 8 + 5 , y - (carWidth / 8 + 5) - 5)
+        context.lineTo(x + carWidth / 8, y - carWidth / 8 );
+        context.lineTo(x - carWidth / 8, y - carWidth / 8);
+        context.closePath();
+        context.fillStyle = '#023d5f'
+        context.fill()
+
+        // draw car bottom glass
+        context.beginPath()
+        context.moveTo(x - carWidth / 8, y + carWidth / 8 )
+        context.lineTo(x - carWidth / 8 - 5, y + carWidth / 8 + 10);
+        context.quadraticCurveTo(x, y + (carWidth / 8 + 5) + 12, x + carWidth / 8 + 5 , y + (carWidth / 8 + 5) + 5)
+        context.lineTo(x + carWidth / 8, y + carWidth / 8 );
+        context.lineTo(x - carWidth / 8, y + carWidth / 8);
+        context.closePath();
+        context.fillStyle = '#023d5f'
+        context.fill()
     })
 }
 function createTarget () {
@@ -144,8 +182,8 @@ function createTarget () {
 }
 
 function moveTargets () {
-    roads.forEach(item => {
-        item.targets.forEach(target => {
+    roads.forEach(road => {
+        road.targets.forEach(target => {
             let speedVector = vector.create(0, gameSpeed)
             target.setPosition(target.getPosition().addTo(speedVector))
         })
@@ -170,9 +208,9 @@ function drawBall (position, color) {
 }
 
 function drawSquare (position, color) {
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth, targetSquareWidth, 5, color)
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 15, targetSquareWidth - 15, 5, 'white')
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 30, targetSquareWidth - 30, 5, color)
+    roundRect(context, position.getX(), position.getY(), targetSquareWidth, targetSquareWidth, 8, color)
+    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 15, targetSquareWidth - 15, 8, 'white')
+    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 30, targetSquareWidth - 30, 3, color)
 }
 
 function drawTargets () {
@@ -183,12 +221,44 @@ function drawTargets () {
         })
     })
 }
-
-
+function removeExitedTargetsFromScreen () {
+    roads.forEach(road => {
+        for (let i = road.targets.length - 1; i >= 0; i--) {
+            if (road.targets[i].getPosition().getY() > height) {
+                road.targets.splice(i, 1)
+            }
+        }
+    })
+}
+function checkCarTargetCollision () {
+    roads.forEach(road => {
+        let car = road.getCar()
+        road.targets.forEach((target, index) => {
+            if (car.getPosition().getX() === target.getPosition().getX() &&
+                Math.abs(car.getPosition().getY() - target.getPosition().getY()) < carHeight / 2 + targetBallRadius) {
+                if (target.getType() === 'ball') {
+                    score++
+                    playScoreSound()
+                    road.targets.splice(index, 1)
+                } else if (target.getType() === 'square') {
+                    heart--
+                    playCollisionSound()
+                    road.targets.splice(index, 1)
+                }
+            }
+        })
+    })
+}
+function showScore () {
+    document.querySelector('#score').innerHTML = score
+}
+function showHearts () {
+    let hearts = '&hearts; &nbsp;'.repeat(heart)
+    document.querySelector('#heart').innerHTML = hearts
+}
 keyboardHandling()
 createTarget()
 
 createRoads()
 startAnimationFrames()
 playBackgroundSound();
-

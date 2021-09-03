@@ -1,6 +1,6 @@
-let collisionSound = document.getElementById("collision")
-let skipSound = document.getElementById("skip")
-let scoreSound = document.getElementById("score")
+let collisionSound = document.getElementById("collisionSound")
+let skipSound = document.getElementById("skipSound")
+let scoreSound = document.getElementById("scoreSound")
 let backgroundSound = document.getElementById("backgroundSound")
 
 function playScoreSound() {
@@ -8,6 +8,12 @@ function playScoreSound() {
 }
 function pauseScoreSound() {
     scoreSound.pause()
+}
+function playCollisionSound() {
+    collisionSound.play()
+}
+function pauseCollisionSound() {
+    collisionSound.pause()
 }
 function resetScoreSound() {
     scoreSound.currentTime = 0
