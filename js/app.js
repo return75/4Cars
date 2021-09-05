@@ -7,21 +7,24 @@ let height = canvas.height= backgroundCanvas.height = window.innerHeight
 
 
 let animationFrame,
-    carNumbers = 4,
+    carsNumber = 4,
     gameSpeed = 1,
     score = 0,
-    heart = 3,
     roadWidth = 200,
     carToBottomDistance = 100,
     carWidth = 45,
     carHeight = 75,
     roads = [],
-    colors = ['#ef0101', '#0150ef', '#0ab333', '#d2c804'],
+    colors = ['#ef0101', '#0150ef', '#0ab333', '#d2c804', "#54ffc8", "#c601cd"],
     targetBallRadius = 20,
     targetSquareWidth = 40,
-    keys = ['F', 'G', 'H', 'J', 'K']
+    keys = ['D','F', 'G', 'H', 'J', 'K'],
+    gameEnded = false
 
 let startAnimationFrames = function () {
+    if (gameEnded) {
+        return
+    }
     clearCanvas()
     drawBackground()
     drawRoads()
@@ -31,20 +34,22 @@ let startAnimationFrames = function () {
     checkCarTargetCollision()
     removeExitedTargetsFromScreen()
     showScore()
-    showHearts()
-    if (heart === 0) {
-        cancelAnimationFrame(animationFrame)
-        return
-    }
     animationFrame = requestAnimationFrame(startAnimationFrames)
 }
 
 function clearCanvas () {
     context.clearRect(0, 0, width, height)
 }
-function keyboardHandling () {
+function handleKeyboard () {
     document.addEventListener('keydown', (event) => {
         if (event.code === 'Escape') {
+            if (!animationFrame) {
+                requestAnimationFrame(startAnimationFrames)
+            } else {
+                cancelAnimationFrame(animationFrame)
+                animationFrame = null
+            }
+        } else if (event.code === 'Escape') {
             if (!animationFrame) {
                 requestAnimationFrame(startAnimationFrames)
             } else {
@@ -102,8 +107,8 @@ function roundRect(context, x, y, width, height, radius = 5, color = 'white', fi
 }
 
 function createRoads () {
-    let startWidth = width / 2 - carNumbers / 2 * roadWidth
-    for (let i = 0; i < carNumbers; i++) {
+    let startWidth = width / 2 - carsNumber / 2 * roadWidth
+    for (let i = 0; i < carsNumber; i++) {
         let newCar = car.create(vector.create(startWidth + roadWidth * i + roadWidth / 4, height - carToBottomDistance), colors[i])
         let leftLine = startWidth + roadWidth * i
         let rightLine =  startWidth + roadWidth * (i + 1)
@@ -115,7 +120,7 @@ function drawCars () {
     roads.forEach(item => {
         let x = item.getCar().getPosition().getX()
         let y = item.getCar().getPosition().getY()
-        let color = item.getCar().color
+        let color = item.getCar().getColor()
 
         roundRect(context, x, y,
             carWidth, carHeight, 15, color)
@@ -148,37 +153,17 @@ function drawCars () {
     })
 }
 function createTarget () {
-    setInterval (() => {
-        let roadLeftLine = roads[0].leftLine
-        let targetType = Math.random() < 0.5 ? 'ball' : 'square'
-        let targetPosition = Math.random() < 0.5 ? vector.create(roadLeftLine + roadWidth / 4, -100) : vector.create(roadLeftLine + roadWidth * 3 / 4, -100)
-        let newTarget = target.create(targetType, targetPosition, colors[0])
-        roads[0].targets.push(newTarget)
-    }, 2000)
-
-    setInterval (() => {
-        let roadLeftLine = roads[1].leftLine
-        let targetType = Math.random() < 0.5 ? 'ball' : 'square'
-        let targetPosition = Math.random() < 0.5 ? vector.create(roadLeftLine + roadWidth / 4, -100) : vector.create(roadLeftLine + roadWidth * 3 / 4, -100)
-        let newTarget = target.create(targetType, targetPosition, colors[1])
-        roads[1].targets.push(newTarget)
-    }, 2000)
-
-    setInterval (() => {
-        let roadLeftLine = roads[2].leftLine
-        let targetType = Math.random() < 0.5 ? 'ball' : 'square'
-        let targetPosition = Math.random() < 0.5 ? vector.create(roadLeftLine + roadWidth / 4, -100) : vector.create(roadLeftLine + roadWidth * 3 / 4, -100)
-        let newTarget = target.create(targetType, targetPosition, colors[2])
-        roads[2].targets.push(newTarget)
-    }, 2000)
-
-    setInterval (() => {
-        let roadLeftLine = roads[3].leftLine
-        let targetType = Math.random() < 0.5 ? 'ball' : 'square'
-        let targetPosition = Math.random() < 0.5 ? vector.create(roadLeftLine + roadWidth / 4, -100) : vector.create(roadLeftLine + roadWidth * 3 / 4, -100)
-        let newTarget = target.create(targetType, targetPosition, colors[3])
-        roads[3].targets.push(newTarget)
-    }, 2000)
+    for (let i = 0; i < carsNumber; i++) {
+        setTimeout(() => {
+            setInterval (() => {
+                let roadLeftLine = roads[i].leftLine
+                let targetType = Math.random() < 0.5 ? 'ball' : 'square'
+                let targetPosition = Math.random() < 0.5 ? vector.create(roadLeftLine + roadWidth / 4, -100) : vector.create(roadLeftLine + roadWidth * 3 / 4, -100)
+                let newTarget = target.create(targetType, targetPosition, colors[i])
+                roads[i].targets.push(newTarget)
+            }, 2500)
+        }, i * 1000)
+    }
 }
 
 function moveTargets () {
@@ -209,8 +194,8 @@ function drawBall (position, color) {
 
 function drawSquare (position, color) {
     roundRect(context, position.getX(), position.getY(), targetSquareWidth, targetSquareWidth, 8, color)
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 15, targetSquareWidth - 15, 8, 'white')
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 30, targetSquareWidth - 30, 3, color)
+    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 15, targetSquareWidth - 15, 4, 'white')
+    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 30, targetSquareWidth - 30, 1, color)
 }
 
 function drawTargets () {
@@ -241,7 +226,7 @@ function checkCarTargetCollision () {
                     playScoreSound()
                     road.targets.splice(index, 1)
                 } else if (target.getType() === 'square') {
-                    heart--
+                    gameEnded = true
                     playCollisionSound()
                     road.targets.splice(index, 1)
                 }
@@ -252,13 +237,5 @@ function checkCarTargetCollision () {
 function showScore () {
     document.querySelector('#score').innerHTML = score
 }
-function showHearts () {
-    let hearts = '&hearts; &nbsp;'.repeat(heart)
-    document.querySelector('#heart').innerHTML = hearts
-}
-keyboardHandling()
-createTarget()
+handleKeyboard()
 
-createRoads()
-startAnimationFrames()
-playBackgroundSound();

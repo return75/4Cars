@@ -14,7 +14,6 @@
         <canvas id="background"></canvas>
         <canvas id="canvas"></canvas>
         <div id="score"></div>
-        <div id="heart"></div>
 
         <script src="js/sounds.js"></script>
         <script src="js/vector.js"></script>
@@ -22,5 +21,49 @@
         <script src="js/target.js"></script>
         <script src="js/car.js"></script>
         <script src="js/app.js"></script>
+        <div id="start-game">
+            <h1 style="font-size: 8rem; margin: 0">4 CARS</h1>
+            <svg style="cursor:pointer;" height="200" width="200" onclick="startGame()">
+                <circle cx="100" cy="100" r="100" stroke="white" stroke-width="2" fill="black" />
+                <polygon points="70,40 170,100 70,160"
+                         style="fill:white;stroke:white;" />
+            </svg>
+            <div style="display: flex; margin-top: 2rem">
+                <button onclick="selectCarsNumber(this, 1)">1 car</button>
+                <button onclick="selectCarsNumber(this, 2)">2 cars</button>
+                <button onclick="selectCarsNumber(this ,3)">3 cars</button>
+                <button onclick="selectCarsNumber(this, 4)" class="button-selected">4 cars</button>
+                <button onclick="selectCarsNumber(this ,5)">5 cars</button>
+            </div>
+            <button onclick="document.querySelector('img').style.display = 'block'">how to play</button>
+            <img src="images/how-to-play.png" alt="" width="600px" style="display: none; max-width: 80vw">
+        </div>
+        <div id="end-game" style="display: none">
+            <div class="left">
+                <div class="score"></div>
+                <div class="winner"></div>
+            </div>
+            <div class="right">
+                <div class="score"></div>
+                <div class="winner"></div>
+            </div>
+        </div>
+        <script>
+            function startGame () {
+                document.querySelector('#start-game').style.display = 'none';
+                createTarget()
+                createRoads()
+                startAnimationFrames()
+                playBackgroundSound();
+            }
+            function selectCarsNumber (e, cars) {
+                for (let i = 0; i < e.parentNode.children.length; i++) {
+                    let node = e.parentNode.children[i]
+                    node.classList = ""
+                }
+                e.classList.add('button-selected')
+                carsNumber = cars
+            }
+        </script>
     </body>
 </html>

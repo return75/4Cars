@@ -11,6 +11,9 @@ let car = {
     setColor: function (color) {
         this.color = color
     },
+    getColor: function (color) {
+        return this.color
+    },
     setPosition: function (position) {
         this.position = position
     },
