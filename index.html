@@ -22,13 +22,13 @@
         <script src="js/car.js"></script>
         <script src="js/app.js"></script>
         <div id="start-game">
-            <h1 style="font-size: 8rem; margin: 0">4 CARS</h1>
+            <h1 style="font-size: 8rem; margin: 0; text-align: center">4 CARS</h1>
             <svg style="cursor:pointer;" height="200" width="200" onclick="startGame()">
                 <circle cx="100" cy="100" r="100" stroke="white" stroke-width="2" fill="black" />
                 <polygon points="70,40 170,100 70,160"
                          style="fill:white;stroke:white;" />
             </svg>
-            <div style="display: flex; margin-top: 2rem">
+            <div style="display: flex;flex-wrap: wrap; justify-content: center ;margin-top: 2rem">
                 <button onclick="selectCarsNumber(this, 1)">1 car</button>
                 <button onclick="selectCarsNumber(this, 2)">2 cars</button>
                 <button onclick="selectCarsNumber(this ,3)">3 cars</button>
@@ -51,6 +51,7 @@
         <script>
             function startGame () {
                 document.querySelector('#start-game').style.display = 'none';
+                setVariablesBasedOnScreen()
                 createTarget()
                 createRoads()
                 startAnimationFrames()

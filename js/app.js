@@ -22,6 +22,10 @@ let animationFrame,
     gameEnded = false
 
 let startAnimationFrames = function () {
+    if (score > 20) {
+        gameSpeed = 2
+    }
+
     if (gameEnded) {
         return
     }
@@ -123,16 +127,16 @@ function drawCars () {
         let color = item.getCar().getColor()
 
         roundRect(context, x, y,
-            carWidth, carHeight, 15, color)
+            carWidth, carHeight, carWidth * .3, color)
         roundRect(context, x, y,
-            carWidth - 15, carHeight - 15, 10 )
+            carWidth * .6, carHeight * .8, carWidth * .2 )
         roundRect(context, x, y,
             carWidth / 4, carWidth / 4 , 0, color)
 
         // draw car top glass
         context.beginPath()
         context.moveTo(x - carWidth / 8, y - carWidth / 8 )
-        context.lineTo(x - carWidth / 8 - 5, y - carWidth / 8 - 10);
+        context.lineTo(x - carWidth / 8 - 5, y - carWidth / 8 - carWidth * .25);
         context.quadraticCurveTo(x, y - (carWidth / 8 + 5) - 12, x + carWidth / 8 + 5 , y - (carWidth / 8 + 5) - 5)
         context.lineTo(x + carWidth / 8, y - carWidth / 8 );
         context.lineTo(x - carWidth / 8, y - carWidth / 8);
@@ -143,7 +147,7 @@ function drawCars () {
         // draw car bottom glass
         context.beginPath()
         context.moveTo(x - carWidth / 8, y + carWidth / 8 )
-        context.lineTo(x - carWidth / 8 - 5, y + carWidth / 8 + 10);
+        context.lineTo(x - carWidth / 8 - 5, y + carWidth / 8 + carWidth * .25);
         context.quadraticCurveTo(x, y + (carWidth / 8 + 5) + 12, x + carWidth / 8 + 5 , y + (carWidth / 8 + 5) + 5)
         context.lineTo(x + carWidth / 8, y + carWidth / 8 );
         context.lineTo(x - carWidth / 8, y + carWidth / 8);
@@ -182,20 +186,20 @@ function drawBall (position, color) {
     context.fill();
 
     context.beginPath()
-    context.arc(position.getX(), position.getY(), targetBallRadius - 7.5, 0, 2 * Math.PI);
+    context.arc(position.getX(), position.getY(), targetBallRadius * .625, 0, 2 * Math.PI);
     context.fillStyle = 'white'
     context.fill();
 
     context.beginPath()
-    context.arc(position.getX(), position.getY(), targetBallRadius - 15, 0, 2 * Math.PI);
+    context.arc(position.getX(), position.getY(), targetBallRadius * .25, 0, 2 * Math.PI);
     context.fillStyle = color
     context.fill();
 }
 
 function drawSquare (position, color) {
     roundRect(context, position.getX(), position.getY(), targetSquareWidth, targetSquareWidth, 8, color)
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 15, targetSquareWidth - 15, 4, 'white')
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth - 30, targetSquareWidth - 30, 1, color)
+    roundRect(context, position.getX(), position.getY(), targetSquareWidth * .625, targetSquareWidth * .625, 4, 'white')
+    roundRect(context, position.getX(), position.getY(), targetSquareWidth * .25, targetSquareWidth * .25, 1, color)
 }
 
 function drawTargets () {
@@ -236,6 +240,15 @@ function checkCarTargetCollision () {
 }
 function showScore () {
     document.querySelector('#score').innerHTML = score
+}
+function setVariablesBasedOnScreen () {
+    if (width < carsNumber * roadWidth) {
+        roadWidth = width / carsNumber
+        carWidth = roadWidth / 4
+        carHeight = 1.6 * carWidth
+        targetSquareWidth = carWidth
+        targetBallRadius = targetSquareWidth / 2
+    }
 }
 handleKeyboard()
 
