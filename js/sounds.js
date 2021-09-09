@@ -12,6 +12,9 @@ function pauseScoreSound() {
 function playCollisionSound() {
     collisionSound.play()
 }
+function playSkipSound() {
+    skipSound.play()
+}
 function pauseCollisionSound() {
     collisionSound.pause()
 }

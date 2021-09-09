@@ -8,7 +8,7 @@ let height = canvas.height= backgroundCanvas.height = window.innerHeight
 
 let animationFrame,
     carsNumber = 4,
-    gameSpeed = 1,
+    gameSpeed = 1.2,
     score = 0,
     roadWidth = 200,
     carToBottomDistance = 100,
@@ -22,10 +22,7 @@ let animationFrame,
     gameEnded = false
 
 let startAnimationFrames = function () {
-    if (score > 20) {
-        gameSpeed = 2
-    }
-
+    console.log('catch')
     if (gameEnded) {
         return
     }
@@ -36,6 +33,7 @@ let startAnimationFrames = function () {
     moveTargets()
     drawCars()
     checkCarTargetCollision()
+    checkIfCarSkipBall()
     removeExitedTargetsFromScreen()
     showScore()
     animationFrame = requestAnimationFrame(startAnimationFrames)
@@ -137,7 +135,7 @@ function drawCars () {
         context.beginPath()
         context.moveTo(x - carWidth / 8, y - carWidth / 8 )
         context.lineTo(x - carWidth / 8 - 5, y - carWidth / 8 - carWidth * .25);
-        context.quadraticCurveTo(x, y - (carWidth / 8 + 5) - 12, x + carWidth / 8 + 5 , y - (carWidth / 8 + 5) - 5)
+        context.quadraticCurveTo(x, y - (carWidth / 8 + 5) - 12, x + carWidth / 8 + 5 , y - carWidth / 8 - carWidth * .25)
         context.lineTo(x + carWidth / 8, y - carWidth / 8 );
         context.lineTo(x - carWidth / 8, y - carWidth / 8);
         context.closePath();
@@ -148,7 +146,7 @@ function drawCars () {
         context.beginPath()
         context.moveTo(x - carWidth / 8, y + carWidth / 8 )
         context.lineTo(x - carWidth / 8 - 5, y + carWidth / 8 + carWidth * .25);
-        context.quadraticCurveTo(x, y + (carWidth / 8 + 5) + 12, x + carWidth / 8 + 5 , y + (carWidth / 8 + 5) + 5)
+        context.quadraticCurveTo(x, y + (carWidth / 8 + 5) + 12, x + carWidth / 8 + 5 , y + carWidth / 8 + carWidth * .25)
         context.lineTo(x + carWidth / 8, y + carWidth / 8 );
         context.lineTo(x - carWidth / 8, y + carWidth / 8);
         context.closePath();
@@ -165,15 +163,15 @@ function createTarget () {
                 let targetPosition = Math.random() < 0.5 ? vector.create(roadLeftLine + roadWidth / 4, -100) : vector.create(roadLeftLine + roadWidth * 3 / 4, -100)
                 let newTarget = target.create(targetType, targetPosition, colors[i])
                 roads[i].targets.push(newTarget)
-            }, 2500)
+            }, 1500)
         }, i * 1000)
     }
 }
 
 function moveTargets () {
+    let speedVector = vector.create(0, gameSpeed)
     roads.forEach(road => {
         road.targets.forEach(target => {
-            let speedVector = vector.create(0, gameSpeed)
             target.setPosition(target.getPosition().addTo(speedVector))
         })
     })
@@ -228,6 +226,7 @@ function checkCarTargetCollision () {
                 if (target.getType() === 'ball') {
                     score++
                     playScoreSound()
+                    setGameSpeedBasedOnScore()
                     road.targets.splice(index, 1)
                 } else if (target.getType() === 'square') {
                     gameEnded = true
@@ -238,6 +237,19 @@ function checkCarTargetCollision () {
         })
     })
 }
+function checkIfCarSkipBall () {
+    roads.forEach(road => {
+        let balls = road.targets.filter(item => item.getType() === 'ball')
+        balls.forEach(item => {
+            if (item.getPosition().getY() > height - carToBottomDistance + carHeight / 2) {
+                gameEnded = true
+                playSkipSound()
+            }
+        })
+
+    })
+}
+
 function showScore () {
     document.querySelector('#score').innerHTML = score
 }
@@ -249,6 +261,9 @@ function setVariablesBasedOnScreen () {
         targetSquareWidth = carWidth
         targetBallRadius = targetSquareWidth / 2
     }
+}
+function setGameSpeedBasedOnScore () {
+     gameSpeed = 2.2 - 10 / (score + 8)
 }
 handleKeyboard()
 
