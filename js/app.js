@@ -22,7 +22,6 @@ let animationFrame,
     gameEnded = false
 
 let startAnimationFrames = function () {
-    console.log('catch')
     if (gameEnded) {
         return
     }
@@ -61,16 +60,20 @@ function handleKeyboard () {
         }
         let keyIndex = keys.indexOf(event.code.slice(-1))
         if (keyIndex !== -1) {
-            let position = roads[keyIndex].getCar().getPosition()
-            if (roads[keyIndex].getCar().getDirection() === 'left') {
-                position.setX(position.getX() + roadWidth / 2)
-                roads[keyIndex].getCar().setDirection('right')
-            } else {
-                position.setX(position.getX() - roadWidth / 2)
-                roads[keyIndex].getCar().setDirection('left')
-            }
+            changeRoadCarDirection(keyIndex)
         }
     }, false)
+}
+
+function changeRoadCarDirection (roadIndex) {
+    let carPosition = roads[roadIndex].getCar().getPosition()
+    if (roads[roadIndex].getCar().getDirection() === 'left') {
+        carPosition.setX(carPosition.getX() + roadWidth / 2)
+        roads[roadIndex].getCar().setDirection('right')
+    } else {
+        carPosition.setX(carPosition.getX() - roadWidth / 2)
+        roads[roadIndex].getCar().setDirection('left')
+    }
 }
 
 function drawBackground () {
@@ -259,11 +262,16 @@ function setVariablesBasedOnScreen () {
         carWidth = roadWidth / 4
         carHeight = 1.6 * carWidth
         targetSquareWidth = carWidth
-        targetBallRadius = targetSquareWidth / 2
+        targetBallRadius = carWidth / 2
     }
 }
 function setGameSpeedBasedOnScore () {
      gameSpeed = 2.2 - 10 / (score + 8)
+}
+
+function handleTouch (e) {
+    let roadIndex = roads.findIndex(item => item.leftLine < e.touches[0].clientX && item.rightLine > e.touches[0].clientX)
+    changeRoadCarDirection(roadIndex)
 }
 handleKeyboard()
 

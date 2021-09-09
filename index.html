@@ -12,7 +12,7 @@
         <audio src="sounds/skip.mp3" id="skipSound"></audio>
 
         <canvas id="background"></canvas>
-        <canvas id="canvas"></canvas>
+        <canvas id="canvas" ontouchstart="handleTouch(event)"></canvas>
         <div id="score"></div>
 
         <script src="js/sounds.js"></script>
@@ -65,6 +65,7 @@
                 e.classList.add('button-selected')
                 carsNumber = cars
             }
+
         </script>
     </body>
 </html>
