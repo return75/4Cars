@@ -264,7 +264,7 @@ function showScore () {
 function setVariablesBasedOnScreen () {
     if (width < carsNumber * roadWidth) {
         roadWidth = width / carsNumber
-        carWidth = roadWidth / 4
+        carWidth = roadWidth / 2.5
         carHeight = 1.6 * carWidth
         targetSquareWidth = carWidth
         targetBallRadius = carWidth / 2
