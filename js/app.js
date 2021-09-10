@@ -8,7 +8,8 @@ let height = canvas.height= backgroundCanvas.height = window.innerHeight
 
 let animationFrame,
     carsNumber = 4,
-    gameSpeed = 1.2,
+    initialGameSpeed = 4,
+    gameSpeed = initialGameSpeed,
     score = 0,
     roadWidth = 200,
     carToBottomDistance = 100,
@@ -19,7 +20,8 @@ let animationFrame,
     targetBallRadius = 20,
     targetSquareWidth = 40,
     keys = ['D','F', 'G', 'H', 'J', 'K'],
-    gameEnded = false
+    gameEnded = false,
+    createTargetIntervals = []
 
 let startAnimationFrames = function () {
     if (gameEnded) {
@@ -57,6 +59,8 @@ function handleKeyboard () {
                 cancelAnimationFrame(animationFrame)
                 animationFrame = null
             }
+        } else if (event.code === 'KeyR') {
+            resetGame()
         }
         let keyIndex = keys.indexOf(event.code.slice(-1))
         if (keyIndex !== -1) {
@@ -117,7 +121,7 @@ function createRoads () {
         let newCar = car.create(vector.create(startWidth + roadWidth * i + roadWidth / 4, height - carToBottomDistance), colors[i])
         let leftLine = startWidth + roadWidth * i
         let rightLine =  startWidth + roadWidth * (i + 1)
-        let newRoad = road.create(newCar, leftLine, rightLine)
+        let newRoad = road.create(newCar, leftLine, rightLine, [])
         roads.push(newRoad)
     }
 }
@@ -160,13 +164,14 @@ function drawCars () {
 function createTarget () {
     for (let i = 0; i < carsNumber; i++) {
         setTimeout(() => {
-            setInterval (() => {
+            let interval = setInterval (() => {
                 let roadLeftLine = roads[i].leftLine
                 let targetType = Math.random() < 0.5 ? 'ball' : 'square'
                 let targetPosition = Math.random() < 0.5 ? vector.create(roadLeftLine + roadWidth / 4, -100) : vector.create(roadLeftLine + roadWidth * 3 / 4, -100)
                 let newTarget = target.create(targetType, targetPosition, colors[i])
                 roads[i].targets.push(newTarget)
             }, 1500)
+            createTargetIntervals.push(interval)
         }, i * 1000)
     }
 }
@@ -174,7 +179,7 @@ function createTarget () {
 function moveTargets () {
     let speedVector = vector.create(0, gameSpeed)
     roads.forEach(road => {
-        road.targets.forEach(target => {
+        road.getTargets().forEach(target => {
             target.setPosition(target.getPosition().addTo(speedVector))
         })
     })
@@ -266,12 +271,28 @@ function setVariablesBasedOnScreen () {
     }
 }
 function setGameSpeedBasedOnScore () {
-     gameSpeed = 2.2 - 10 / (score + 8)
+     gameSpeed = 5 - 10 / (score + 8)
 }
-
 function handleTouch (e) {
     let roadIndex = roads.findIndex(item => item.leftLine < e.touches[0].clientX && item.rightLine > e.touches[0].clientX)
     changeRoadCarDirection(roadIndex)
 }
+function clearTargetIntervals () {
+    createTargetIntervals.map(item => {
+        clearInterval(item)
+    })
+}
+function resetGame () {
+    score = 0
+    roads = []
+    gameEnded = false
+    gameSpeed = initialGameSpeed
+    clearTargetIntervals()
+    createRoads()
+    createTarget()
+    startAnimationFrames()
+}
+
+
 handleKeyboard()
 
