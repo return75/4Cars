@@ -304,7 +304,7 @@ function finishTheGame () {
     let bestScore = JSON.parse(scores)[carsNumber]
     document.querySelector('#best-score').innerHTML = bestScore
     setTimeout(() => {
-       // showEndGamePanel()
+        showEndGamePanel()
     }, 2000)
 }
 function showEndGamePanel () {
@@ -317,6 +317,8 @@ function storeScoreInLocalStorage () {
         3: 0,
         4: 0,
         5: 0,
+        6: 0,
+        7: 0,
     })
     scores = JSON.parse(scores)
     if (score > scores[carsNumber]) {
