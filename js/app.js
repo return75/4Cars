@@ -16,10 +16,11 @@ let animationFrame,
     carWidth = 45,
     carHeight = 75,
     roads = [],
-    colors = ['#ef0101', '#0150ef', '#0ab333', '#d2c804', "#54ffc8", "#c601cd"],
+    colors = ['#00aac2', '#d50b39', "#03ce69", '#e8bc01',
+        "#0653ea", '#ea6a01', "#ea0176"],
     targetBallRadius = 20,
     targetSquareWidth = 40,
-    keys = ['D','F', 'G', 'H', 'J', 'K'],
+    keys = ['D','F', 'G', 'H', 'J', 'K', 'L'],
     gameEnded = false,
     createTargetIntervals = []
 
@@ -303,7 +304,7 @@ function finishTheGame () {
     let bestScore = JSON.parse(scores)[carsNumber]
     document.querySelector('#best-score').innerHTML = bestScore
     setTimeout(() => {
-        showEndGamePanel()
+       // showEndGamePanel()
     }, 2000)
 }
 function showEndGamePanel () {
