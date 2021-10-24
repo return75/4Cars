@@ -35,7 +35,7 @@
                 <button onclick="selectCarsNumber(this, 4)" class="button-selected">4 cars</button>
                 <button onclick="selectCarsNumber(this ,5)">5 cars</button>
             </div>
-            <button onclick="document.querySelector('img').style.display = 'block'">how to play</button>
+            <button onclick="toggleGuidImage()">how to play</button>
             <img src="images/how-to-play.png" alt="" width="600px" style="display: none; max-width: 80vw">
         </div>
         <div id="end-game" style="display: none">
@@ -67,7 +67,14 @@
                 e.classList.add('button-selected')
                 carsNumber = cars
             }
-
+            function toggleGuidImage () {
+                let display = document.querySelector('img').style.display
+                if (display === 'block') {
+                    document.querySelector('img').style.display = 'none'
+                } else {
+                    document.querySelector('img').style.display = 'block'
+                }
+            }
         </script>
     </body>
 </html>
