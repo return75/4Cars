@@ -95,9 +95,7 @@ function drawRoads () {
         backgroundContext.stroke();
     })
 }
-
-function roundRect(context, x, y, width, height, radius = 5, color = 'white', fill = true, stroke = true) {
-
+function drawRoundedRectangle(context, x, y, width, height, radius = 5, color = 'white', fill = true, stroke = true) {
     context.beginPath();
     context.moveTo(x - width / 2 + radius, y - height / 2);
     context.lineTo(x + width / 2 - radius, y - height / 2);
@@ -114,7 +112,6 @@ function roundRect(context, x, y, width, height, radius = 5, color = 'white', fi
         context.fill();
     }
 }
-
 function createRoads () {
     let startWidth = width / 2 - carsNumber / 2 * roadWidth
     for (let i = 0; i < carsNumber; i++) {
@@ -131,11 +128,11 @@ function drawCars () {
         let y = item.getCar().getPosition().getY()
         let color = item.getCar().getColor()
 
-        roundRect(context, x, y,
+        drawRoundedRectangle(context, x, y,
             carWidth, carHeight, carWidth * .3, color)
-        roundRect(context, x, y,
+        drawRoundedRectangle(context, x, y,
             carWidth * .6, carHeight * .8, carWidth * .2 )
-        roundRect(context, x, y,
+        drawRoundedRectangle(context, x, y,
             carWidth / 4, carWidth / 4 , 0, color)
 
         // draw car top glass
@@ -203,9 +200,9 @@ function drawBall (position, color) {
 }
 
 function drawSquare (position, color) {
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth, targetSquareWidth, 8, color)
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth * .625, targetSquareWidth * .625, 4, 'white')
-    roundRect(context, position.getX(), position.getY(), targetSquareWidth * .25, targetSquareWidth * .25, 1, color)
+    drawRoundedRectangle(context, position.getX(), position.getY(), targetSquareWidth, targetSquareWidth, 8, color)
+    drawRoundedRectangle(context, position.getX(), position.getY(), targetSquareWidth * .625, targetSquareWidth * .625, 4, 'white')
+    drawRoundedRectangle(context, position.getX(), position.getY(), targetSquareWidth * .25, targetSquareWidth * .25, 1, color)
 }
 
 function drawTargets () {
@@ -237,7 +234,7 @@ function checkCarTargetCollision () {
                     setGameSpeedBasedOnScore()
                     road.targets.splice(index, 1)
                 } else if (target.getType() === 'square') {
-                    gameEnded = true
+                    finishTheGame()
                     playCollisionSound()
                     road.targets.splice(index, 1)
                 }
@@ -250,7 +247,7 @@ function checkIfCarSkipBall () {
         let balls = road.targets.filter(item => item.getType() === 'ball')
         balls.forEach(item => {
             if (item.getPosition().getY() > height - carToBottomDistance + carHeight / 2) {
-                gameEnded = true
+                finishTheGame()
                 playSkipSound()
             }
         })
@@ -294,9 +291,37 @@ function resetGame () {
     clearTargetIntervals()
     createRoads()
     createTarget()
+    document.querySelector('#end-game').style.display = 'none'
     startAnimationFrames()
 }
 
-
+function finishTheGame () {
+    storeScoreInLocalStorage()
+    gameEnded = true
+    document.querySelector('#final-score').innerHTML = score
+    let scores = localStorage.getItem('scores')
+    let bestScore = JSON.parse(scores)[carsNumber]
+    document.querySelector('#best-score').innerHTML = bestScore
+    setTimeout(() => {
+        showEndGamePanel()
+    }, 2000)
+}
+function showEndGamePanel () {
+    document.querySelector('#end-game').style.display = 'flex'
+}
+function storeScoreInLocalStorage () {
+    let scores = localStorage.getItem('scores') || JSON.stringify({
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+    })
+    scores = JSON.parse(scores)
+    if (score > scores[carsNumber]) {
+        scores[carsNumber] = score
+    }
+    localStorage.setItem('scores', JSON.stringify(scores))
+}
 handleKeyboard()
 

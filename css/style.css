@@ -45,34 +45,19 @@ canvas {
     position: absolute;
     display: flex;
     justify-content: center;
+    flex-direction: column;
     align-items: center;
-    background: #00000057;
+    background: black;
     color: white;
 }
-#end-game > div > .score , #end-game > div > .winner {
-    font-size: 10rem;
-    margin-top: 2rem;
-    text-align: center;
-}
-#end-game button {
-    position: absolute;
-    left: 50%;
-    width: 100px;
-    background: rgb(177, 5, 102);
-    z-index: 3;
-    margin-left: -50px;
-    top: 70%;
-}
-#end-game .left {
-    background: #de0505;
-}
-#end-game .right {
-    background: #0274d7;
-}
-#end-game > div {
+
+#end-game div{
     width: 400px;
-    max-width: 40vw;
-    height: 600px;
+    max-width: 90vw;
+    font-size: 4rem;
+    font-weight: bolder;
+    display: flex;
+    justify-content: space-between;
 }
 button {
     border: 1px solid white;

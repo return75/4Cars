@@ -39,14 +39,16 @@
             <img src="images/how-to-play.png" alt="" width="600px" style="display: none; max-width: 80vw">
         </div>
         <div id="end-game" style="display: none">
-            <div class="left">
-                <div class="score"></div>
-                <div class="winner"></div>
+            <h1 style="font-size: 8rem; margin: 0; text-align: center">Game Over</h1>
+            <div>
+                <span>SCORE</span>
+                <span id="final-score">40</span>
             </div>
-            <div class="right">
-                <div class="score"></div>
-                <div class="winner"></div>
+            <div>
+                <span>BEST</span>
+                <span id="best-score">160</span>
             </div>
+            <button onclick="resetGame()">replay</button>
         </div>
         <script>
             function startGame () {
