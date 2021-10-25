@@ -261,7 +261,7 @@ function showScore () {
 }
 function setVariablesBasedOnScreen () {
     if (width < carsNumber * roadWidth) {
-        roadWidth = width / carsNumber
+        roadWidth = (width / carsNumber).toFixed()
         if (carsNumber < 4) {
             carWidth = roadWidth / 3
         } else {
